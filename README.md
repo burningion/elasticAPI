@@ -21,6 +21,6 @@ Although that's ugly, we always change things in the future, so let's add a vers
 
 Changed RESTful calls for the URLS:
 
-http://localhost/<CLIENTNAME>/deals?status=active
+http://localhost/v1/<CLIENTNAME>/deals?status=active
 
-http://localhost/<CLIENTNAME>/deals?status=inactive
+http://localhost/v1/<CLIENTNAME>/deals?status=inactive

@@ -7,32 +7,45 @@
 #
 #   $ gunicorn -k egg:gunicorn#tornado webapp:app
 #
+import yaml
+import glob
 
 from datetime import timedelta
 
-from tornado.web import Application, RequestHandler, asynchronous
-from tornado.ioloop import IOLoop
+from tornado.web import Application, RequestHandler
+
+def getAPIDescription():
+    a = open("APIDescription.yaml")
+    return yaml.load(a)
+
+def getData():
+    data = {}
+    a = glob.iglob("data/*.yaml")
+    for file in a:
+        b = open(file)
+        c = yaml.load(b)
+        data.update(c)
+        b.close()
+    return data
+
+apiDescription = getAPIDescription()
+dataDictionary = getData()
 
 class MainHandler(RequestHandler):
     def get(self):
         self.write("Hello, world")
 
-class LongPollHandler(RequestHandler):
-    @asynchronous
+class APIHandler(RequestHandler):
     def get(self):
-        lines = ['line 1\n', 'line 2\n']
+        self.write(apiDescription)
 
-        def send():
-            try:
-                self.write(lines.pop(0))
-                self.flush()
-            except:
-                self.finish()
-            else:
-                IOLoop.instance().add_timeout(timedelta(0, 20), send)
-        send()
+class DealsHandler(RequestHandler):
+    def get(self, merchant_name):
+        status = self.request.arguments['status'][0]
+        self.write(dataDictionary[merchant_name][status])
 
 app = Application([
     (r"/", MainHandler),
-    (r"/longpoll", LongPollHandler)
+    (r"/v1/", APIHandler),
+    (r"/v1/(.*)/", DealsHandler)
 ])

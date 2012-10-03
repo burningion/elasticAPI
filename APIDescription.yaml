@@ -1,0 +1,3 @@
+merchantapi:
+  urls: ['/v1/<merchant_name>/deals?status=active', '/v1/<merchant_name>/deals?status=inactive']
+  version: 1.0
