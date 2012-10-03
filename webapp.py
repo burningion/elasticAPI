@@ -12,7 +12,7 @@ import glob
 
 from datetime import timedelta
 
-from tornado.web import Application, RequestHandler
+from tornado.web import Application, RequestHandler, HTTPError
 
 def getAPIDescription():
     a = open("APIDescription.yaml")
@@ -40,12 +40,23 @@ class APIHandler(RequestHandler):
         self.write(apiDescription)
 
 class DealsHandler(RequestHandler):
+    #   Be sure to bring this up. Is every request in Tornado an object,
+    #   and can I guarantee that self.arguments in this call is always
+    #   immutable for the duration of call?
+    def getKeyOrError(self, arguments, key):
+        if key in arguments.keys():
+            return arguments['status'][0]
+        raise HTTPError(400)
+
     def get(self, merchant_name):
-        status = self.request.arguments['status'][0]
-        self.write(dataDictionary[merchant_name][status])
+        status = self.getKeyOrError(self.request.arguments, 'status')
+        if merchant_name in dataDictionary.keys():
+            self.write(dataDictionary[merchant_name][status])
+        else:
+            raise HTTPError(404)
 
 app = Application([
     (r"/", MainHandler),
     (r"/v1/", APIHandler),
-    (r"/v1/(.*)/", DealsHandler)
+    (r"/v1/(.*)/deals", DealsHandler)
 ])
