@@ -1,3 +1,7 @@
 merchantapi:
-  urls: ['/v1/<merchant_name>/deals?status=active', '/v1/<merchant_name>/deals?status=inactive']
+  description: Deals API for finding active deals for your merchant. 
+  path: /v1/<merchant_name>/deals?status=active
+  options: 
+           active
+           inactive
   version: 1.0

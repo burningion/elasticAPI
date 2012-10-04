@@ -8,7 +8,7 @@
 #   $ gunicorn -k egg:gunicorn#tornado webapp:app
 #
 import yaml
-import glob
+import schema
 
 from datetime import timedelta
 
@@ -18,18 +18,9 @@ def getAPIDescription():
     a = open("APIDescription.yaml")
     return yaml.load(a)
 
-def getData():
-    data = {}
-    a = glob.iglob("data/*.yaml")
-    for file in a:
-        b = open(file)
-        c = yaml.load(b)
-        data.update(c)
-        b.close()
-    return data
-
 apiDescription = getAPIDescription()
-dataDictionary = getData()
+allowableOptions = apiDescription['merchantapi']['options']
+# dataDictionary = schema.get_data_from_yaml()[0]
 
 class MainHandler(RequestHandler):
     def get(self):
@@ -43,15 +34,17 @@ class DealsHandler(RequestHandler):
     #   Be sure to bring this up. Is every request in Tornado an object,
     #   and can I guarantee that self.arguments in this call is always
     #   immutable for the duration of call?
-    def getKeyOrError(self, arguments, key):
-        if key in arguments.keys():
+    def get_key_or_error(self, arguments, key):
+        if (key in arguments.keys()) and (arguments[key][0] in allowableOptions):
             return arguments['status'][0]
         raise HTTPError(400)
 
     def get(self, merchant_name):
-        status = self.getKeyOrError(self.request.arguments, 'status')
-        if merchant_name in dataDictionary.keys():
-            self.write(dataDictionary[merchant_name][status])
+        status = self.get_key_or_error(self.request.arguments, 'status')
+        merchant = schema.get_company(merchant_name)
+
+        if merchant:
+            self.write(unicode(merchant[0][status]))
         else:
             raise HTTPError(404)
 
