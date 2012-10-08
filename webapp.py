@@ -30,6 +30,15 @@ class APIHandler(RequestHandler):
     def get(self):
         self.write(apiDescription)
 
+    def post(self):
+        raise HTTPError(403)
+    
+    def delete(self):
+        raise HTTPError(403)
+
+    def update(self):
+        raise HTTPError(403)
+
 class DealsHandler(RequestHandler):
     #   Be sure to bring this up. Is every request in Tornado an object,
     #   and can I guarantee that self.arguments in this call is always
@@ -48,8 +57,18 @@ class DealsHandler(RequestHandler):
         else:
             raise HTTPError(404)
 
+    def post(self):
+        raise HTTPError(403)
+    
+    def delete(self):
+        raise HTTPError(403)
+
+    def update(self):
+        raise HTTPError(403)
+
+
 app = Application([
     (r"/", MainHandler),
-    (r"/v1/", APIHandler),
+    (r"/v1", APIHandler),
     (r"/v1/(.*)/deals", DealsHandler)
 ])
