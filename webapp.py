@@ -70,5 +70,6 @@ class DealsHandler(RequestHandler):
 app = Application([
     (r"/", MainHandler),
     (r"/v1", APIHandler),
+    (r"/v1/", APIHandler),
     (r"/v1/(.*)/deals", DealsHandler)
 ])
