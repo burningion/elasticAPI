@@ -5,11 +5,11 @@ This is an example application to demonstrate building a basic API with Tornado 
 
 It can be deployed with the following command:
 
->> $ gunicorn -k egg:gunicorn#tornado webapp:app
+> $ gunicorn -k egg:gunicorn#tornado webapp:app
 
 Once deployed, you can run the nosetests, to verify the API works. I should make this run on a different port when testing, that would be smart.
 
-# TODO
+# DONE
 
 Implement RESTful calls for the following URLS:
 
